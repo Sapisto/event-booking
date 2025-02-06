@@ -1,0 +1,26 @@
+{
+  "development": {
+    "url": "postgresql://neondb_owner:npg_lIRFYe0B7hDn@ep-wandering-salad-a8r87c2m-pooler.eastus2.azure.neon.tech/neondb?sslmode=require",
+    "dialect": "postgres",
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    }
+  },
+  "test": {
+    "url": "postgresql://neondb_owner:npg_lIRFYe0B7hDn@ep-wandering-salad-a8r87c2m-pooler.eastus2.azure.neon.tech/neondb?sslmode=require",
+    "dialect": "postgres",
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    }
+  },
+  "production": {
+    "use_env_variable": "DB_URL",
+    "dialect": "postgres"
+  }
+}
