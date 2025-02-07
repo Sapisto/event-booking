@@ -6,9 +6,12 @@ import jwt from "jsonwebtoken";
 import { calculateTotalPages } from "../service/response";
 import { configuration } from "../config";
 import { AuthRequest } from "../middlewares/authenticate";
-import { registerSchema, loginSchema, updateProfileSchema } from "../schemaValidation/validations";
-
-
+import {
+  registerSchema,
+  loginSchema,
+  updateProfileSchema,
+} from "../schemaValidation/validations";
+import { sendEmail } from "../service/emailService";
 
 export const registerUser = async (
   req: Request,
@@ -40,6 +43,14 @@ export const registerUser = async (
 
     const hashedPassword = await bcrypt.hash(password, 10);
     await User.create({ email, password: hashedPassword });
+
+    await sendEmail({
+      to: email,
+      subject: "Welcome to Event Bookings 🎉",
+      html: `<h1>Welcome to Event Bookings</h1>
+             <p>Thank you for signing up! We are excited to have you onboard.</p>
+             <p><strong>Enjoy your experience!</strong></p>`,
+    });
 
     const successResponse: GeneralResponse<null> = {
       succeeded: true,
@@ -83,7 +94,7 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     }
 
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role }, 
+      { id: user.id, email: user.email, role: user.role },
       configuration.SECRET_KEY,
       { expiresIn: "1h" }
     );
@@ -111,8 +122,10 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const getAllUsers = async (req: AuthRequest, res: Response): Promise<void> => {
-  
+export const getAllUsers = async (
+  req: AuthRequest,
+  res: Response
+): Promise<void> => {
   const pageNumber = parseInt(req.query.pageNumber as string) || 1;
   const pageSize = parseInt(req.query.pageSize as string) || 10;
 
@@ -169,7 +182,7 @@ export const updateUserProfile = async (
   }
 
   const { email, password } = req.body;
-  const userId = req.user?.id; 
+  const userId = req.user?.id;
 
   try {
     const user = await User.findByPk(userId);
@@ -185,12 +198,11 @@ export const updateUserProfile = async (
 
     if (email) user.email = email;
     if (password) {
-
       const hashedPassword = await bcrypt.hash(password, 10);
       user.password = hashedPassword;
     }
     await user.save();
-    
+
     const { password: _, ...updatedUser } = user.get();
 
     const successResponse: GeneralResponse<any> = {
@@ -209,4 +221,3 @@ export const updateUserProfile = async (
     res.status(500).json(errorResponse);
   }
 };
-

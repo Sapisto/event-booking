@@ -20,6 +20,8 @@ app.use(express.json());
 // Swagger documentation
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+app.use(express.static("public"));
+
 // Routes
 app.use("/api/events", eventRoutes);
 app.use("/api/bookings", bookingRoutes); 

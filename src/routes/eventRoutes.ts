@@ -5,7 +5,7 @@ import  authenticate  from '../middlewares/authenticate';
 
 const router = Router();
 
-router.get('/getAllEvnts', getAllEvents);
+router.get('/getAllEvents', getAllEvents);
 router.post('/createEvents', authenticate, checkRole(['admin']), createEvent);
 
 export default router;
