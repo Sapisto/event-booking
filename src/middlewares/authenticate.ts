@@ -20,7 +20,6 @@ const authenticate = async (
       succeeded: false,
       code: 401,
       message: "Access denied. No token provided.",
-      data: null,
     };
     res.status(401).json(errorResponse);
     return;
@@ -37,8 +36,8 @@ const authenticate = async (
         succeeded: false,
         code: 401,
         message: "Invalid token.",
-        data: null,
       };
+
       res.status(401).json(errorResponse);
       return;
     }
@@ -50,7 +49,6 @@ const authenticate = async (
       succeeded: false,
       code: 401,
       message: "Invalid or expired token.",
-      data: null,
     };
     res.status(401).json(errorResponse);
     return;

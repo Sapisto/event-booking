@@ -12,11 +12,7 @@ import {
 import { sendEmail } from "../service/emailService";
 import { User } from "../models/User";
 import dayjs from "dayjs";
-
-const bookingSchema = Joi.object({
-  eventId: Joi.number().required(),
-  ticketsBooked: Joi.number().required().greater(0),
-});
+import { bookingSchema } from "../schemaValidation/validations";
 
 // Book a ticket for an event
 export const bookTicket = async (
@@ -106,7 +102,7 @@ export const bookTicket = async (
 
     await transaction.commit();
 
-    const formattedDate = dayjs(event.eventDate).format('MMMM D, YYYY h:mm A');
+    const formattedDate = dayjs(event.eventDate).format("MMMM D, YYYY h:mm A");
 
     await sendEmail({
       to: user?.email,
@@ -115,13 +111,13 @@ export const bookTicket = async (
         <div style="padding: 10px; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.5;">
           <h1 style="margin-bottom: 10px;">Booking Confirmation</h1>
           <p>Dear ${user?.email},</p>
-          <p>You have successfully booked your ticket(s) for <strong>${
-            event?.eventName
-          }</strong>.</p>
+          <p>You have successfully booked your ticket(s) for <strong>${event?.eventName}</strong>.</p>
           <p><strong>Event Date:</strong> ${formattedDate}</p>
           <p><strong>Tickets Booked:</strong> ${ticketsBooked}</p>
           <p style="margin-bottom: 15px;">Thank you for choosing Event Bookings!</p>
-          <img src="cid:eventImage" alt="Event Image" style="max-width: 100%; height: auto; display: block; margin: 10px 0;">
+           <a href="https://autox.aff.ng/event/${event?.id}" target="_blank">
+             <img src="cid:eventImage" alt="Event Image" style="max-width: 100%; height: auto; display: block; margin: 10px 0;">
+          </a>
         </div>
       `,
       attachments: [
@@ -178,7 +174,7 @@ export const getAllBookings = async (
     const pagedResponse: GeneralResponse<any[]> = {
       succeeded: true,
       code: 200,
-      message: "Fetched paginated bookings",
+      message: "Fetched All bookings",
       data: bookings,
       errors: null,
       pageMeta,

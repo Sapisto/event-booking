@@ -4,10 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "swagger": "ts-node swagger.ts",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "dev": "npm run watch"
+     "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts"
   },
   "keywords": [],
   "author": "",
@@ -52,6 +51,8 @@
     "swagger-autogen": "^2.23.7",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
+    "tspec": "^0.1.116",
     "uuid": "^11.0.5"
   }
 }
+

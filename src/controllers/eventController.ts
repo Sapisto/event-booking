@@ -6,13 +6,8 @@ import {
   GeneralResponse,
   PageMeta,
 } from "../service/response";
+import { eventSchema } from "../schemaValidation/validations";
 
-const eventSchema = Joi.object({
-  eventName: Joi.string().required(),
-  eventDate: Joi.date().min("now").required(),
-  totalTickets: Joi.number().integer().min(1).required(),
-  availableTickets: Joi.number().integer().min(0).required(),
-});
 
 export const createEvent = async (
   req: Request,
@@ -105,7 +100,7 @@ export const getAllEvents = async (
     const pagedResponse: GeneralResponse<any[]> = {
       succeeded: true,
       code: 200,
-      message: "Fetched paginated events",
+      message: "Fetched all events",
       data: events,
       pageMeta,
       errors: null,

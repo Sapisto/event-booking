@@ -33,7 +33,7 @@ interface Error {
 }
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error(err.stack);
+  console.log(err.stack);
   res.status(500).send("Something went wrong!");
 });
 

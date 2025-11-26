@@ -8,8 +8,8 @@ const checkRole = (allowedRoles: string[]) => {
     res: Response,
     next: NextFunction
   ): Promise<void> => {
-    try {
-        
+
+    try {      
       const userId = req.user?.id;
       if (!userId) {
         const response: GeneralResponse<null> = {
@@ -31,6 +31,7 @@ const checkRole = (allowedRoles: string[]) => {
         };
         res.status(403).json(response);
         return;
+       
       }
 
       next();

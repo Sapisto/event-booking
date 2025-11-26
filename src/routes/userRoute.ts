@@ -14,7 +14,7 @@ router.post("/register", registerUser);
 
 router.post("/login", loginUser);
 
-router.put("/user/profile", authenticate, updateUserProfile);
+router.put("/updateProfile", authenticate, updateUserProfile);
 
 router.get("/users", authenticate, checkRole(["admin"]), getAllUsers);
 

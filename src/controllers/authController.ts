@@ -165,7 +165,6 @@ export const getAllUsers = async (
     res.status(500).json(errorResponse);
   }
 };
-
 export const updateUserProfile = async (
   req: AuthRequest,
   res: Response
@@ -196,11 +195,27 @@ export const updateUserProfile = async (
       return;
     }
 
-    if (email) user.email = email;
+    if (email) {
+      console.log(email, 'email addresss-----');
+       
+      const existingUser = await User.findOne({ where: { email } });
+      if (existingUser && existingUser.id !== userId) {
+        const errorResponse: GeneralResponse<null> = {
+          succeeded: false,
+          code: 409, 
+          message: "Email is already in use by another user",
+        };
+        res.status(409).json(errorResponse);
+        return;
+      }
+      user.email = email;
+    }
+
     if (password) {
       const hashedPassword = await bcrypt.hash(password, 10);
       user.password = hashedPassword;
     }
+
     await user.save();
 
     const { password: _, ...updatedUser } = user.get();
