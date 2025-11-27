@@ -15,11 +15,6 @@ const router = Router();
  * /api/auth/register:
  *   post:
  *     tags: [Authentication]
- *     summary: Register a new user or admin (single endpoint)
- *     description: |
- *       This endpoint is used to create both **normal users** and **admin users**.
- *       - If `role` is not provided, the default role applied is `"user"`.
- *       - Admin accounts can only be created by users with **admin privileges**.
  *     requestBody:
  *       required: true
  *       content:
