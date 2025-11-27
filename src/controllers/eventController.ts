@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import Joi from "joi";
 import { Event } from "../models/Event";
 import {
   calculateTotalPages,
