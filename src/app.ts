@@ -43,7 +43,7 @@ const swaggerOptions = {
         "API documentation for the Event Booking application.",
       contact: {
         name: "Event Booking Dev Team",
-        email: "support@eventbookings.com",
+        email: "abdulazeezalasa@.com",
       },
     },
     components: {
