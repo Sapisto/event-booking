@@ -37,7 +37,7 @@ const swaggerOptions = {
       title: "Event Booking API",
       version: "1.0.0",
       description:
-        "API documentation for the Event Booking application (Updated with latest Swagger UI)",
+        "API documentation for the Event Booking application.",
       contact: {
         name: "Event Booking Dev Team",
         email: "support@eventbookings.com",

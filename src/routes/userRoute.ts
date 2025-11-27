@@ -48,7 +48,6 @@ router.post("/register", registerUser);
  * /api/auth/login:
  *   post:
  *     tags: [Authentication]
- *     summary: Log in a user and return a JWT token
  *     requestBody:
  *       required: true
  *       content:
@@ -76,7 +75,6 @@ router.post("/login", loginUser);
  * /api/auth/getAllUsers:
  *   get:
  *     tags: [Authentication]
- *     summary: Get all registered users (Admin only)
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -105,7 +103,6 @@ router.get("/getAllUsers", authenticate, checkRole(["admin"]), getAllUsers);
  * /api/auth/updateProfile:
  *   put:
  *     tags: [Authentication]
- *     summary: Update user profile details
  *     security:
  *       - bearerAuth: []
  *     requestBody:
