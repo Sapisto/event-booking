@@ -31,14 +31,11 @@ app.get("/", (req: Request, res: Response) => {
     res.send("Event Booking API is running...");
 });
 
-
-// =======================
 // 🔥 LATEST SWAGGER SETUP
-// =======================
 
 const swaggerOptions = {
   definition: {
-    openapi: "3.0.3",            // Updated to latest stable OpenAPI version
+    openapi: "3.0.3",        
     info: {
       title: "Event Booking API",
       version: "1.0.0",
