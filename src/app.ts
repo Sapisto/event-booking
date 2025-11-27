@@ -26,6 +26,12 @@ app.use("/api/events", eventRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/auth", userRoutes);
 
+// -------------------- Simple route --------------------
+app.get("/", (req: Request, res: Response) => {
+    res.send("Event Booking API is running...");
+});
+
+
 // =======================
 // 🔥 LATEST SWAGGER SETUP
 // =======================
