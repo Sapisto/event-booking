@@ -3,7 +3,7 @@ import {
   registerUser,
   loginUser,
   getAllUsers,
-  updateUserProfile
+  updateUserProfile,
 } from "../controllers/authController";
 import authenticate from "../middlewares/authenticate";
 import checkRole from "../middlewares/checkRoles";
@@ -15,6 +15,11 @@ const router = Router();
  * /api/auth/register:
  *   post:
  *     tags: [Authentication]
+ *     summary: Register a new user or admin (single endpoint)
+ *     description: |
+ *       This endpoint is used to create both **normal users** and **admin users**.
+ *       - If `role` is not provided, the default role applied is `"user"`.
+ *       - Admin accounts can only be created by users with **admin privileges**.
  *     requestBody:
  *       required: true
  *       content:
@@ -25,15 +30,21 @@ const router = Router();
  *             properties:
  *               email:
  *                 type: string
- *                 example: johndoe@gmail.com
+ *                 example: example@gmail.com
  *               password:
  *                 type: string
- *                 example: secret123
+ *                 example: ExamplePassword123
+ *               role:
+ *                 type: string
+ *                 enum: [admin, user]
+ *                 example: user
  *     responses:
  *       201:
- *         description: User registered successfully
+ *         description: User or admin registered successfully
  *       400:
- *         description: Validation or user already exists error
+ *         description: Validation error or user already exists
+ *       403:
+ *         description: Only admins can create other admin accounts
  */
 router.post("/register", registerUser);
 
@@ -42,6 +53,7 @@ router.post("/register", registerUser);
  * /api/auth/login:
  *   post:
  *     tags: [Authentication]
+ *     summary: Log in a user and return a JWT token
  *     requestBody:
  *       required: true
  *       content:
@@ -69,6 +81,7 @@ router.post("/login", loginUser);
  * /api/auth/getAllUsers:
  *   get:
  *     tags: [Authentication]
+ *     summary: Get all registered users (Admin only)
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -84,9 +97,11 @@ router.post("/login", loginUser);
  *           type: integer
  *     responses:
  *       200:
- *         description: Returns paginated list of all users
+ *         description: Paginated list of users returned successfully
  *       401:
  *         description: Unauthorized
+ *       403:
+ *         description: Admin access required
  */
 router.get("/getAllUsers", authenticate, checkRole(["admin"]), getAllUsers);
 
@@ -95,6 +110,7 @@ router.get("/getAllUsers", authenticate, checkRole(["admin"]), getAllUsers);
  * /api/auth/updateProfile:
  *   put:
  *     tags: [Authentication]
+ *     summary: Update user profile details
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -109,7 +125,7 @@ router.get("/getAllUsers", authenticate, checkRole(["admin"]), getAllUsers);
  *                 example: newemail@gmail.com
  *               password:
  *                 type: string
- *                 example: newsecret123
+ *                 example: newSecret123
  *     responses:
  *       200:
  *         description: Profile updated successfully

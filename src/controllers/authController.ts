@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { User } from "../models/User";
+import { User, UserRole } from "../models/User";
 import { GeneralResponse, PageMeta } from "../service/response";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -19,54 +19,82 @@ export const registerUser = async (
 ): Promise<void> => {
   const { error } = registerSchema.validate(req.body);
   if (error) {
-    const errorResponse: GeneralResponse<null> = {
+    res.status(400).json({
       succeeded: false,
       code: 400,
       message: `Validation failed: ${error.details[0].message}`,
-    };
-    res.status(400).json(errorResponse);
+    });
     return;
   }
 
-  const { email, password } = req.body;
+  const { email, password, role = UserRole.USER } = req.body;
+
   try {
-    const existingUser = await User.findOne({ where: { email } });
-    if (existingUser) {
-      const errorResponse: GeneralResponse<null> = {
+    // Validate role dynamically
+    if (!Object.values(UserRole).includes(role)) {
+      res.status(400).json({
         succeeded: false,
         code: 400,
-        message: "User already exists.",
-      };
-      res.status(400).json(errorResponse);
+        message: "Invalid role. Allowed values: admin, user",
+      });
       return;
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    await User.create({ email, password: hashedPassword });
+    // Check if email exists
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      res.status(400).json({
+        succeeded: false,
+        code: 400,
+        message: "User already exists.",
+      });
+      return;
+    }
 
-    await sendEmail({
-      to: email,
-      subject: "Welcome to Event Bookings 🎉",
-      html: `<h1>Welcome to Event Bookings</h1>
-             <p>Thank you for signing up! We are excited to have you onboard.</p>
-             <p><strong>Enjoy your experience!</strong></p>`,
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create user with role
+    const user = await User.create({
+      email,
+      password: hashedPassword,
+      role,
     });
 
-    const successResponse: GeneralResponse<null> = {
+    // Send email based on role
+    await sendEmail({
+      to: email,
+      subject:
+        role === UserRole.ADMIN
+          ? "Admin Account Created 👑"
+          : "Welcome to Event Bookings 🎉",
+      html:
+        role === UserRole.ADMIN
+          ? `<h1>Admin Account Created</h1>
+             <p>Your admin account has been created successfully.</p>`
+          : `<h1>Welcome to Event Bookings</h1>
+             <p>Thank you for signing up! We are excited to have you onboard.</p>`,
+    });
+
+    res.status(201).json({
       succeeded: true,
-      code: 200,
-      message: "User registered successfully!",
-    };
-    res.status(201).json(successResponse);
+      code: 201,
+      message: `${role} registered successfully!`,
+      data: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      },
+    });
   } catch (error) {
-    const errorResponse: GeneralResponse<null> = {
+    res.status(500).json({
       succeeded: false,
       code: 500,
       message: `Error registering user: ${(error as Error).message}`,
-    };
-    res.status(500).json(errorResponse);
+    });
   }
 };
+
 
 export const loginUser = async (req: Request, res: Response): Promise<void> => {
   const { error } = loginSchema.validate(req.body);

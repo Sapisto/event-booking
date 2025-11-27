@@ -2,11 +2,14 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
+
 import eventRoutes from "./routes/eventRoutes";
 import bookingRoutes from "./routes/bookingRoute";
 import userRoutes from "./routes/userRoute";
+
 import swaggerUi from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
+
 import { Request, Response, NextFunction } from "express";
 
 const app = express();
@@ -16,43 +19,73 @@ app.use(cors());
 app.use(helmet());
 app.use(morgan("dev"));
 app.use(express.json());
-
-
 app.use(express.static("public"));
 
 // Routes
 app.use("/api/events", eventRoutes);
-app.use("/api/bookings", bookingRoutes); 
+app.use("/api/bookings", bookingRoutes);
 app.use("/api/auth", userRoutes);
 
+// =======================
+// 🔥 LATEST SWAGGER SETUP
+// =======================
+
 const swaggerOptions = {
-    definition: {
-        openapi: "3.0.0",
-        info: {
-            title: "Event Booking API",
-            version: "1.0.0",
-            description: "API documentation for the Event Booking application",
-        },
-        components: {
-            securitySchemes: {
-                bearerAuth: {
-                    type: "http",
-                    scheme: "bearer",
-                    bearerFormat: "JWT",
-                },
-            },
-        },
-        security: [
-            {
-                bearerAuth: [],
-            },
-        ],
+  definition: {
+    openapi: "3.0.3",            // Updated to latest stable OpenAPI version
+    info: {
+      title: "Event Booking API",
+      version: "1.0.0",
+      description:
+        "API documentation for the Event Booking application (Updated with latest Swagger UI)",
+      contact: {
+        name: "Event Booking Dev Team",
+        email: "support@eventbookings.com",
+      },
     },
-    apis: ["./src/routes/*.ts"],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
+  },
+
+  // Auto-load your TS route files with @swagger comments
+  apis: ["./src/routes/*.ts"],
 };
 
 const swaggerSpecs = swaggerJsdoc(swaggerOptions);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+
+// Enable latest UI features
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpecs, {
+    explorer: true, // Enables file & tag navigation
+    swaggerOptions: {
+      persistAuthorization: true, // Keeps JWT in Swagger after page refresh
+      displayRequestDuration: true,
+      syntaxHighlight: {
+        activated: true,
+        theme: "obsidian", // Dark theme
+      },
+      docExpansion: "none", // collapse all sections
+    },
+    customSiteTitle: "Event Booking API Docs",
+  })
+);
+
+
+// GLOBAL ERROR HANDLER
 
 interface Error {
   stack?: string;
