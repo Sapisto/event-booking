@@ -75,7 +75,7 @@ app.use(
   swaggerUi.setup(swaggerSpecs, {
     explorer: true, // Enables file & tag navigation
     swaggerOptions: {
-      persistAuthorization: true, // Keeps JWT in Swagger after page refresh in test will be removed later
+      persistAuthorization: false, // Keeps JWT in Swagger after page refresh in test will be removed later
       displayRequestDuration: true,
       syntaxHighlight: {
         activated: true,

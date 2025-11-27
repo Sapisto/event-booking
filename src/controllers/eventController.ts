@@ -89,6 +89,7 @@ export const getAllEvents = async (
     const events = await Event.findAll({
       offset: (pageNumber - 1) * pageSize,
       limit: pageSize,
+      order: [["createdAt", "DESC"]],
     });
     const pageMeta: PageMeta = {
       pageNumber,

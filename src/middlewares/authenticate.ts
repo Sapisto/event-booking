@@ -19,7 +19,8 @@ const authenticate = async (
     const errorResponse: GeneralResponse<null> = {
       succeeded: false,
       code: 401,
-      message: "Access denied. No token provided.",
+      message: "Access denied, Unauthenticated.",
+      errors: ["Authentication token is missing."],
     };
     res.status(401).json(errorResponse);
     return;
