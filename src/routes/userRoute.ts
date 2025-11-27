@@ -4,6 +4,8 @@ import {
   loginUser,
   getAllUsers,
   updateUserProfile,
+  logoutUser,
+  getLoggedInUser,
 } from "../controllers/authController";
 import authenticate from "../middlewares/authenticate";
 import checkRole from "../middlewares/checkRoles";
@@ -127,5 +129,35 @@ router.get("/getAllUsers", authenticate, checkRole(["admin"]), getAllUsers);
  *         description: User not found
  */
 router.put("/updateProfile", authenticate, updateUserProfile);
+
+/**
+ * @swagger
+ * /api/auth/logout:
+ *   post:
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Logout successful
+ *       401:
+ *         description: Unauthorized
+ */
+router.post("/logout", authenticate, logoutUser);
+
+/**
+ * @swagger
+ * /api/auth/me:
+ *   get:
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Returns logged-in user information
+ *       401:
+ *         description: Unauthorized
+ */
+router.get("/me", authenticate, getLoggedInUser);
 
 export default router;

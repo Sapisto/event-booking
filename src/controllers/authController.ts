@@ -82,7 +82,7 @@ export const registerUser = async (
       message: `${role} registered successfully!`,
       data: {
         id: user.id,
-        email: user.email,
+        email: email.toLowerCase(),
         role: user.role,
       },
     });
@@ -94,7 +94,6 @@ export const registerUser = async (
     });
   }
 };
-
 
 export const loginUser = async (req: Request, res: Response): Promise<void> => {
   const { error } = loginSchema.validate(req.body);
@@ -162,6 +161,8 @@ export const getAllUsers = async (
     const users = await User.findAll({
       offset: (pageNumber - 1) * pageSize,
       limit: pageSize,
+      order: [["createdAt", "DESC"]],
+      attributes: ["id", "email", "role", "createdAt", "updatedAt"],
     });
 
     const pageMeta: PageMeta = {
@@ -224,13 +225,13 @@ export const updateUserProfile = async (
     }
 
     if (email) {
-      console.log(email, 'email addresss-----');
-       
+      console.log(email, "email addresss-----");
+
       const existingUser = await User.findOne({ where: { email } });
       if (existingUser && existingUser.id !== userId) {
         const errorResponse: GeneralResponse<null> = {
           succeeded: false,
-          code: 409, 
+          code: 409,
           message: "Email is already in use by another user",
         };
         res.status(409).json(errorResponse);
@@ -262,5 +263,53 @@ export const updateUserProfile = async (
       message: `Error updating profile: ${(error as Error).message}`,
     };
     res.status(500).json(errorResponse);
+  }
+};
+
+/** ------------------ Logout ------------------ */
+export const logoutUser = async (
+  req: AuthRequest,
+  res: Response
+): Promise<void> => {
+  res.status(200).json({
+    succeeded: true,
+    code: 200,
+    message: "Logout successful",
+  });
+};
+
+/** ------------------ Get logged-in user ------------------ */
+export const getLoggedInUser = async (
+  req: AuthRequest,
+  res: Response
+): Promise<void> => {
+  const userId = req.user?.id;
+
+  try {
+    const user = await User.findByPk(userId, {
+      attributes: ["id", "email", "role", "createdAt", "updatedAt"],
+    });
+
+    if (!user) {
+      res.status(404).json({
+        succeeded: false,
+        code: 404,
+        message: "User not found",
+      });
+      return;
+    }
+
+    res.status(200).json({
+      succeeded: true,
+      code: 200,
+      message: "Logged-in user fetched successfully",
+      data: user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      succeeded: false,
+      code: 500,
+      message: `Error fetching user: ${(error as Error).message}`,
+    });
   }
 };

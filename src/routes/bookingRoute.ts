@@ -1,5 +1,9 @@
 import { Router } from "express";
-import { bookTicket, getAllBookings } from "../controllers/bookingController";
+import {
+  bookTicket,
+  getAllBookings,
+  getBookingsByEvent,
+} from "../controllers/bookingController";
 import authenticate from "../middlewares/authenticate";
 import checkRole from "../middlewares/checkRoles";
 
@@ -61,4 +65,35 @@ router.get(
  */
 router.post("/manage-bookings", authenticate, bookTicket);
 
+/**
+ * @swagger
+ * /api/bookings/event/{eventId}:
+ *   get:
+ *     tags: [Bookings]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: eventId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - name: pageNumber
+ *         in: query
+ *       - name: pageSize
+ *         in: query
+ *     responses:
+ *       200:
+ *         description: Fetched bookings for the specified event
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Event not found
+ */
+router.get(
+  "/event/:eventId",
+  authenticate,
+  checkRole(["admin"]),
+  getBookingsByEvent
+);
 export default router;

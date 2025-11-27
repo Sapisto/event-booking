@@ -162,6 +162,7 @@ export const getAllBookings = async (
     const bookings = await Booking.findAll({
       offset: (pageNumber - 1) * pageSize,
       limit: pageSize,
+      order: [["createdAt", "DESC"]],
     });
 
     const pageMeta: PageMeta = {
@@ -181,6 +182,56 @@ export const getAllBookings = async (
     };
 
     res.status(200).json(pagedResponse);
+  } catch (error) {
+    const errorResponse = {
+      succeeded: false,
+      code: 500,
+      message: `Error fetching bookings: ${(error as Error).message}`,
+      data: null,
+      errors: null,
+      pageMeta: null,
+    };
+    res.status(500).json(errorResponse);
+  }
+};
+
+// Get all bookings for a particular event
+export const getBookingsByEvent = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { eventId } = req.params;
+  const pageNumber = parseInt(req.query.pageNumber as string) || 1;
+  const pageSize = parseInt(req.query.pageSize as string) || 10;
+
+  try {
+    const totalRecords = await Booking.count({ where: { eventId } });
+
+    const bookings = await Booking.findAll({
+      where: { eventId },
+      // include: [{ model: User, attributes: ["id", "email", "role"] }],
+      offset: (pageNumber - 1) * pageSize,
+      limit: pageSize,
+      order: [["createdAt", "DESC"]], // most recent first
+    });
+
+    const pageMeta: PageMeta = {
+      pageNumber,
+      pageSize,
+      totalRecords,
+      totalPages: calculateTotalPages(totalRecords, pageSize),
+    };
+
+    const response: GeneralResponse<any[]> = {
+      succeeded: true,
+      code: 200,
+      message: `Fetched bookings for event ${eventId}`,
+      data: bookings,
+      errors: null,
+      pageMeta,
+    };
+
+    res.status(200).json(response);
   } catch (error) {
     const errorResponse = {
       succeeded: false,
