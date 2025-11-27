@@ -2,16 +2,17 @@
   "compilerOptions": {
     "target": "es2016",
     "module": "commonjs",
-    "rootDir": "./",
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "moduleResolution": "node",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "skipLibCheck": true,
     "strict": true,
-    "outDir": "./dist",
-    "resolveJsonModule": true // Added this line
+    "resolveJsonModule": true
   },
-  "include": ["src/**/*.ts", "src/types/**/*.d.ts"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }
