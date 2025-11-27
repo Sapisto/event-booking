@@ -6,7 +6,7 @@ import eventRoutes from "./routes/eventRoutes";
 import bookingRoutes from "./routes/bookingRoute";
 import userRoutes from "./routes/userRoute";
 import swaggerUi from "swagger-ui-express";
-import swaggerDocument from "../swagger-output.json";
+import swaggerJsdoc from "swagger-jsdoc";
 import { Request, Response, NextFunction } from "express";
 
 const app = express();
@@ -17,8 +17,6 @@ app.use(helmet());
 app.use(morgan("dev"));
 app.use(express.json());
 
-// Swagger documentation
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(express.static("public"));
 
@@ -27,7 +25,35 @@ app.use("/api/events", eventRoutes);
 app.use("/api/bookings", bookingRoutes); 
 app.use("/api/auth", userRoutes);
 
-// Error handling middleware
+const swaggerOptions = {
+    definition: {
+        openapi: "3.0.0",
+        info: {
+            title: "Event Booking API",
+            version: "1.0.0",
+            description: "API documentation for the Event Booking application",
+        },
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: "http",
+                    scheme: "bearer",
+                    bearerFormat: "JWT",
+                },
+            },
+        },
+        security: [
+            {
+                bearerAuth: [],
+            },
+        ],
+    },
+    apis: ["./src/routes/*.ts"],
+};
+
+const swaggerSpecs = swaggerJsdoc(swaggerOptions);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+
 interface Error {
   stack?: string;
 }
